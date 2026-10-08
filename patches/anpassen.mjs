@@ -238,7 +238,57 @@ for (const ordner of ["sprachdatei", "patches"]) {
 }
 aenderungen.push("Eingaben des Baus entfernt (sprachdatei/, patches/)");
 
-/* 12. Bericht. */
+/* 12. Seitentitel und Beschreibung auf Deutsch und ohne Fremdverweise.
+   Die Vorlage traegt ihren eigenen Namen, ihre Beschreibung und ihre Adresse
+   (chat.webllm.ai) an sechs Stellen in `app/layout.tsx` ein — im Titel des
+   Browsers, in den Vorschaukarten und in den strukturierten Daten. Fuer ein
+   Werkzeug, das keine fremde Adresse aufrufen soll, gehoert dort unser eigener
+   Name und unsere eigene Adresse hin. Das Vorschaubild liegt ebenfalls bei uns
+   (public/mlc-logo.png). */
+function ersetzeAlle(pfad, anker, ersatz, beschreibung) {
+  const quelle = readFileSync(pfad, "utf8");
+  const treffer = quelle.split(anker).length - 1;
+  if (treffer === 0) {
+    fehler.push(`${beschreibung}: Anker nicht gefunden in ${pfad}`);
+    return;
+  }
+  writeFileSync(pfad, quelle.split(anker).join(ersatz));
+  aenderungen.push(`${beschreibung} (${treffer} Stellen)`);
+}
+
+ersetzeAlle(
+  "app/layout.tsx",
+  "WebLLM Chat - Browser-based AI conversation",
+  "Sprachmodell im Browser",
+  "Vorschaubild-Beschriftung auf Deutsch",
+);
+ersetzeAlle(
+  "app/layout.tsx",
+  "https://chat.webllm.ai",
+  "https://sprachmodell.mekotools.de",
+  "Fremde Adresse durch die eigene ersetzt",
+);
+ersetzeAlle(
+  "app/layout.tsx",
+  "Chat with AI large language models running natively in your browser. Enjoy private, server-free, seamless AI conversations.",
+  "Ein Sprachmodell im Browser ausprobieren: Frage eintippen, Antwort erscheint. Ohne Anmeldung, ohne Übertragung — gerechnet wird auf dem eigenen Gerät.",
+  "Beschreibung der Seite auf Deutsch",
+);
+ersetzeAlle(
+  "app/layout.tsx",
+  "Chat with AI large language models running natively in your browser",
+  "Sprachmodell im Browser: antwortet ohne Anmeldung, gerechnet wird auf dem eigenen Gerät",
+  "Kurzbeschreibung der Seite auf Deutsch",
+);
+ersetzeAlle(
+  "app/layout.tsx",
+  "WebLLM Chat",
+  "Sprachmodell im Browser",
+  "Seitentitel auf Deutsch",
+);
+ersetzeAlle("app/layout.tsx", '"WebLLM",', '"Sprachmodell",', "Suchbegriff auf Deutsch");
+
+/* 13. Bericht. */
 if (fehler.length) {
   console.error("Die Anpassung ist fehlgeschlagen:");
   for (const f of fehler) console.error("  - " + f);
