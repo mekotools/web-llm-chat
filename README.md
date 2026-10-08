@@ -96,6 +96,12 @@ Alle Eingriffe stehen in `patches/anpassen.mjs` und sind einzeln kommentiert.
   (`@mlc-ai/web-llm` bringt rund 400 Modelladressen mit). Benutzt wird davon
   nichts — die Modellliste der Anwendung zeigt auf unseren Server, und die
   Kopfzeile `connect-src 'self'` verbietet dem Browser jede andere Verbindung.
+- **Deutsch ist die Vorgabe, auch bei englischer Browsersprache.** Die Vorlage
+  liest zuerst `navigator.language` und fällt nur sonst auf `DEFAULT_LANG`
+  zurück; auf einem Gerät mit englischer Einstellung erschien die Oberfläche
+  deshalb komplett englisch. Die Browsersprache wird nicht mehr ausgewertet —
+  eine andere Sprache wählt man in den Einstellungen oder mit `?lang=en`.
+  Ebenso steht `<html lang="de">` im Quelltext (Vorlesehilfen).
 
 ## Zweites Modell ergänzen
 

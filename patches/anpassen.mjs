@@ -288,7 +288,33 @@ ersetzeAlle(
 );
 ersetzeAlle("app/layout.tsx", '"WebLLM",', '"Sprachmodell",', "Suchbegriff auf Deutsch");
 
-/* 13. Bericht. */
+/* 13. Deutsche Oberflaeche als Vorgabe.
+   `DEFAULT_LANG = "de"` steht schon in Schritt 2. Es reichte aber nicht: die
+   Vorlage richtet sich zuerst nach der Sprache des Browsers und faellt nur
+   sonst auf die Vorgabe zurueck. Auf einem Geraet mit englischer
+   Spracheinstellung erschien die ganze Oberflaeche deshalb englisch, obwohl die
+   deutsche Sprachdatei beiliegt. Hier faellt die Browsersprache weg; eine andere
+   Sprache waehlt man weiterhin in den Einstellungen (oder mit ?lang=xx). */
+ersetze(
+  "app/locales/index.ts",
+  `  try {
+    return navigator.language.toLowerCase();
+  } catch {
+    return DEFAULT_LANG;
+  }`,
+  `  try {
+    // MekoTools: deutsche Vorgabe. Die Sprache des Browsers wird bewusst
+    // nicht ausgewertet — sonst erscheint die Oberflaeche auf Geraeten mit
+    // englischer Einstellung englisch. Umstellen: Einstellungen oder ?lang=xx.
+    return DEFAULT_LANG;
+  } catch {
+    return DEFAULT_LANG;
+  }`,
+  "Browsersprache nicht mehr ausgewertet",
+);
+ersetze("app/layout.tsx", '<html lang="en">', '<html lang="de">', "Sprachkennzeichnung auf Deutsch");
+
+/* 14. Bericht. */
 if (fehler.length) {
   console.error("Die Anpassung ist fehlgeschlagen:");
   for (const f of fehler) console.error("  - " + f);
