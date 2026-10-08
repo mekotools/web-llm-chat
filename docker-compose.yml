@@ -13,7 +13,7 @@
 
 services:
   web:
-    image: ghcr.io/mekotools/web-llm-chat@sha256:0000000000000000000000000000000000000000000000000000000000000000
+    image: ghcr.io/mekotools/web-llm-chat@sha256:2a8b4ab058ae7bbd189eb34697b196577a47ca50db833387cf011844072bc603
     container_name: mekotools-web-llm-chat
     restart: unless-stopped
     networks: [coolify]
