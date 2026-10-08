@@ -1,10 +1,11 @@
 name: Abbild bauen
 
-# Baut das fertige Abbild und legt es in der Registry ab. Der Lauf holt zur
-# Bauzeit die Modellgewichte (276 MB) und den WebLLM-Rechenkern (4,8 MB) und
-# prueft beide gegen die mitgelieferten SHA-256-Pruefsummen. Weil der Lauf
-# INNERHALB dieses oeffentlichen Repos schibt, entsteht das Paket in GHCR
-# oeffentlich und ist anonym ziehbar.
+# Baut das fertige Abbild und legt es in der Registry ab. Der Lauf holt nur noch
+# den WebLLM-Rechenkern (4,8 MB) und prueft ihn gegen die mitgelieferte
+# SHA-256-Pruefsumme. Die Modellgewichte (276 MB) holt der Bau NICHT mehr: sie
+# kommen ueber modelle/holen.sh auf den VPS, der sie ausliefert (Repo
+# mekotools-modelle). Weil der Lauf INNERHALB dieses oeffentlichen Repos schibt,
+# entsteht das Paket in GHCR oeffentlich und ist anonym ziehbar.
 
 on:
   push:
