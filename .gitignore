@@ -1,0 +1,8 @@
+# Nichts davon gehört ins Repo — die Vorlage wird im Bau frisch geklont.
+node_modules/
+.next/
+out/
+site/
+*.log
+.dockerignore
+.env

@@ -1,0 +1,59 @@
+schema_version: 1
+id: mekotools-web-llm-chat
+titel: Sprachmodell
+kurzbeschreibung: 'Ein Sprachmodell im Browser ausprobieren: antwortet ohne Anmeldung,
+  gerechnet wird auf dem eigenen Geraet. Nach dem ersten Laden arbeitet es ohne
+  Netzverbindung.'
+themen:
+- ki
+unterthemen:
+- ki/sprachmodelle
+laufzeit: browser
+betrieb: eigen
+reifegrad: stabil
+aufwand_lehrkraft: niedrig
+zugang:
+  art: offen
+zielgruppe:
+- sek1
+- sek2
+- berufsschule
+- erwachsene
+geraete:
+- desktop
+- tablet
+kamera: nein
+mikrofon: nein
+webgpu: ja
+bildungsbezug:
+  kompetenzen:
+  - analysieren-reflektieren
+  - suchen-verarbeiten
+  - produzieren-praesentieren
+  faecher:
+  - deutsch
+  - faecheruebergreifend
+  - informatik
+  lernziele:
+  - Die Lernenden koennen einem Sprachmodell eine Frage stellen und die Antwort
+    einordnen, statt sie fuer geprueft zu halten.
+  - Die Lernenden koennen benennen, wo die Grenzen eines kleinen Modells liegen
+    (kurze Antworten, Fehler bei Fakten, kein Weltwissen).
+  - Die Lernenden koennen erklaeren, warum ein Modell auf dem eigenen Geraet
+    datenschutzfreundlicher ist als ein Dienst im Netz.
+technik:
+  artefakte:
+  - typ: image
+    referenz: ghcr.io/mekotools/web-llm-chat:latest
+    sichtbarkeit: public
+    geprueft_am: '2026-10-08'
+  dienst_url: https://sprachmodell.mekotools.de
+  port: 3000
+  quellcode: https://github.com/mlc-ai/web-llm-chat
+  lizenz: Apache-2.0
+  lizenz_link: https://github.com/mlc-ai/web-llm-chat/blob/main/LICENSE
+doku:
+  anleitung: docs/anleitung.md
+  didaktik: docs/didaktik.md
+  unterrichtsentwurf: docs/unterrichtsentwurf.md
+stand: '2026-10-08'

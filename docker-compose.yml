@@ -1,0 +1,29 @@
+# MekoTools: Sprachmodell — Stapel fuer flip
+#
+# Ablage auf dem Zielhost: /poolio/docker/mekotools-web-llm-chat/docker-compose.yml
+# Start:  cd /poolio/docker/mekotools-web-llm-chat && docker compose up -d
+#
+# Feste Fassung: das Abbild wird ueber seinen Inhaltswert (Digest) festgenagelt,
+# nicht ueber :latest — ein neuer Bau aendert das laufende Werkzeug dann nicht
+# von selbst.
+#
+# Dienst: Node liefert die gebaute Seite aus (Port 3000 im Behaelter) und dazu
+# die Modellgewichte unter /modelle/ sowie den Rechenkern unter /wasm/.
+# Keine Datenablage, keine Geheimnisse, keine Umgebungsvariablen.
+
+services:
+  web:
+    image: ghcr.io/mekotools/web-llm-chat@sha256:0000000000000000000000000000000000000000000000000000000000000000
+    container_name: mekotools-web-llm-chat
+    restart: unless-stopped
+    networks: [coolify]
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=coolify
+      - traefik.http.routers.mekotools-web-llm-chat.rule=Host(`sprachmodell.mekotools.de`)
+      - traefik.http.routers.mekotools-web-llm-chat.entrypoints=http
+      - traefik.http.services.mekotools-web-llm-chat.loadbalancer.server.port=3000
+
+networks:
+  coolify:
+    external: true
