@@ -100,7 +100,7 @@ ersetze(
 ersetze(
   "app/client/webllm.ts",
   "      appConfig: {\n        ...prebuiltAppConfig,\n        useIndexedDBCache: this.llmConfig?.cache === \"index_db\",\n      },",
-  "      appConfig: {\n        model_list: EIGENE_MODELLE,\n        useIndexedDBCache: true,\n      },",
+  "      appConfig: {\n        model_list: EIGENE_MODELLE,\n        useIndexedDBCache: this.llmConfig?.cache === \"index_db\",\n      },",
   "Modelle aus eigener Quelle (webllm.ts)",
 );
 
@@ -314,7 +314,136 @@ ersetze(
 );
 ersetze("app/layout.tsx", '<html lang="en">', '<html lang="de">', "Sprachkennzeichnung auf Deutsch");
 
-/* 14. Bericht. */
+/* 15. Nur Modelle anbieten, die hier wirklich liegen.
+
+   Die Vorlage setzt beim Start `config.setModels(DEFAULT_MODELS)` — die
+   vollstaendige Liste der WebLLM-Vorlagen (Phi, Llama 3B/8B, DeepSeek 7B,
+   Hermes …). Im Auswahlfeld standen dadurch ueber 30 Modelle, von denen
+   keines ausser dem eigenen geladen werden kann: die Kopfzeile laesst nur den
+   eigenen Server zu, die Gewichte der anderen liegen bei Hugging Face. Wer
+   eines davon waehlte, bekam einen Ladefehler — genau der Eindruck "die
+   Modelle sind nicht da". Uebrig bleibt, was in eigene-modelle.ts steht. */
+ersetze(
+  "app/components/home.tsx",
+  "      config.setModels(DEFAULT_MODELS);",
+  `      // MekoTools: nur Modelle, deren Gewichte auf diesem Server liegen.
+      // Ohne diesen Filter ueberschreibt die Vorlage die Auswahl mit ihrer
+      // vollstaendigen Fremdliste.
+      config.setModels(
+        DEFAULT_MODELS.filter((m) =>
+          EIGENE_MODELLE.some((e) => e.model_id === m.name),
+        ),
+      );`,
+  "Auswahlliste auf vorhandene Modelle begrenzt (home.tsx)",
+);
+
+ersetze(
+  "app/components/home.tsx",
+  `import { DEFAULT_MODELS, Path, SlotID } from "../constant";`,
+  `import { DEFAULT_MODELS, Path, SlotID } from "../constant";
+import { EIGENE_MODELLE } from "../eigene-modelle";`,
+  "Eigene Modellangaben eingebunden (home.tsx)",
+);
+
+/* 16. Zwischenspeicher fuer Gewichte und Rechenkern.
+
+   Die Dateien gingen ohne Haltbarkeitsangabe ueber die Leitung (max-age=0),
+   und WebLLMs eigener Speicher greift nur beim Rechnen. Ergebnis: bei jedem
+   Aufruf liefen die 271 MB erneut. Diese Regel legt sie in den
+   Zwischenspeicher des Browsers; ab dem zweiten Aufruf wird nichts mehr
+   geholt. */
+ersetze(
+  "app/worker/service-worker.ts",
+  "    ...defaultCache,",
+  `    /* MekoTools: Gewichte und Rechenkern. CacheFirst ohne Ablauf — die
+       Dateien tragen ihre Fassung im Namen. */
+    {
+      matcher: ({ sameOrigin, url: { pathname } }) =>
+        sameOrigin &&
+        (pathname.startsWith("/modelle/") || pathname.startsWith("/wasm/")),
+      handler: new CacheFirst({
+        cacheName: "mekotools-gewichte",
+      }),
+    },
+    ...defaultCache,`,
+  "Zwischenspeicher fuer Gewichte und Rechenkern (service-worker.ts)",
+);
+
+/* 17. Haltbarkeit in der Kopfzeile — greift auch ohne Service Worker. */
+ersetze(
+  "next.config.mjs",
+  `      {
+        source: "/api/:path*",
+        headers: CorsHeaders,
+      },`,
+  `      {
+        source: "/api/:path*",
+        headers: CorsHeaders,
+      },
+      {
+        /* MekoTools: Gewichte und Rechenkern tragen ihre Fassung im Namen und
+           aendern sich unter derselben Adresse nie. Ein Jahr Haltbarkeit —
+           vorher stand dort max-age=0, also eine Rueckfrage bei jedem Aufruf. */
+        source: "/modelle/:path*",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=31536000, immutable",
+          },
+        ],
+      },
+      {
+        source: "/wasm/:path*",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=31536000, immutable",
+          },
+        ],
+      },`,
+  "Haltbarkeit fuer Gewichte und Rechenkern (next.config.mjs)",
+);
+
+/* 18. Modellbetrieb: der Schnittstellen-Betrieb faellt weg.
+
+   Er wuerde einen fremden Server aufrufen; die Kopfzeile laesst aber nur den
+   eigenen zu (connect-src 'self'). Ein Schalter, der garantiert scheitert,
+   gehoert nicht in die Oberflaeche. */
+ersetze(
+  "app/components/model-config.tsx",
+  `          <option value={ModelClient.MLCLLM_API} key={ModelClient.MLCLLM_API}>
+            {Locale.Settings.ModelClientType.MlcLlm}
+          </option>
+        </Select>`,
+  `        </Select>
+        <p style={{ opacity: 0.7, fontSize: "0.85em", marginTop: 4 }}>
+          Dieses Werkzeug rechnet im Browser und ruft keinen fremden Server
+          auf. Der Betrieb ueber eine Schnittstelle ist deshalb nicht moeglich.
+        </p>`,
+  "Schnittstellen-Betrieb entfernt (war durch die Kopfzeile gesperrt)",
+);
+
+/* 19. Das eine vorhandene Modell erklaeren. */
+ersetze(
+  "app/components/model-config.tsx",
+  `            </Select>
+          </ListItem>
+
+          {config.modelConfig.model.toLowerCase().startsWith("qwen3") && (`,
+  `            </Select>
+            <p style={{ opacity: 0.7, fontSize: "0.85em", marginTop: 4 }}>
+              Auf diesem Server liegt genau ein Modell: Qwen 2.5 mit 0,5 Mrd.
+              Parametern. Es ist klein und schnell und kommt mit deutschen
+              Texten zurecht. Der Download ist rund 271 MB gross, laeuft einmal
+              und bleibt danach im Browserspeicher.
+            </p>
+          </ListItem>
+
+          {config.modelConfig.model.toLowerCase().startsWith("qwen3") && (`,
+  "Modellbeschreibung auf Deutsch",
+);
+
+/* 20. Bericht. */
 if (fehler.length) {
   console.error("Die Anpassung ist fehlgeschlagen:");
   for (const f of fehler) console.error("  - " + f);
