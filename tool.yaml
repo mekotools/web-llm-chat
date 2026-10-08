@@ -8,6 +8,10 @@ themen:
 - ki
 unterthemen:
 - ki/sprachmodelle
+stufe: 3
+schlagworte:
+- ki
+- sprache-text
 laufzeit: browser
 betrieb: eigen
 reifegrad: stabil
