@@ -100,7 +100,7 @@ ersetze(
 ersetze(
   "app/client/webllm.ts",
   "      appConfig: {\n        ...prebuiltAppConfig,\n        useIndexedDBCache: this.llmConfig?.cache === \"index_db\",\n      },",
-  "      appConfig: {\n        model_list: EIGENE_MODELLE,\n        useIndexedDBCache: this.llmConfig?.cache === \"index_db\",\n      },",
+  "      appConfig: {\n        // Der Rechenkern der Bibliothek verlangt vollstaendige Adressen: er baut\n        // aus dem Eintrag eine URL und haengt dabei \"resolve/main/\" an (siehe\n        // @mlc-ai/web-llm). Ein relativer Pfad loest dort einen TypeError aus —\n        // genau der Fehler, der die Seite unbrauchbar machte. Deshalb hier gegen\n        // die Adresse der Seite aufloesen; die Gewichte liegen unter\n        // /modelle/qwen2.5-0.5b/resolve/main/.\n        model_list: EIGENE_MODELLE.map((m) => ({\n          ...m,\n          model: new URL(m.model, document.baseURI).href,\n          model_lib: new URL(m.model_lib, document.baseURI).href,\n        })),\n        useIndexedDBCache: this.llmConfig?.cache === \"index_db\",\n      },",
   "Modelle aus eigener Quelle (webllm.ts)",
 );
 

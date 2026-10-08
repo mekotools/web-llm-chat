@@ -62,7 +62,9 @@ ENV NODE_ENV=production \
 COPY --from=bau /app/public ./public
 COPY --from=bau /app/.next/standalone ./
 COPY --from=bau /app/.next/static ./.next/static
-COPY --from=gewichte /gewichte/modelle/qwen2.5-0.5b ./public/modelle/qwen2.5-0.5b
+# Die Bibliothek holt die Gewichte unter <Modelladresse>/resolve/main/ ab
+# (siehe @mlc-ai/web-llm). Deshalb liegen sie genau dort.
+COPY --from=gewichte /gewichte/modelle/qwen2.5-0.5b ./public/modelle/qwen2.5-0.5b/resolve/main
 COPY --from=gewichte /gewichte/wasm ./public/wasm
 HEALTHCHECK --interval=30s --timeout=5s --retries=3 \
   CMD wget -qO /dev/null http://127.0.0.1:3000/ || exit 1
