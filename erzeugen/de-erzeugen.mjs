@@ -309,7 +309,43 @@ if (leer.length) {
   process.exit(1);
 }
 
-fs.writeFileSync(ziel, kopf + zeig(ergebnis) + ";\n\nexport default de;\n");
+/* Fremdnamen aus dem Altbestand der deutschen Sprachdatei entfernen.
+   Die mitgelieferte deutsche Uebersetzung nennt an mehreren Stellen ChatGPT,
+   WebLLM und MLC-LLM. In einem Werkzeug, das auf dem eigenen Geraet rechnet und
+   nichts uebertraegt, sind das irrefuehrende Namen — und zum Teil schlicht
+   falsch: das Modell hier ist Qwen2.5, nicht ChatGPT. Ersetzt wird auf dem
+   fertigen Text; jede Ersetzung wird nachgezaehlt, eine ohne Treffer bricht ab. */
+let text = kopf + zeig(ergebnis) + ";\n\nexport default de;\n";
+const fremdnamen = [
+  ["${count} Nachrichten mit ChatGPT", "${count} Nachrichten im Verlauf"],
+  ["Nachricht von WebLLM", "Nachricht vom Sprachmodell"],
+  [
+    "Erzwingt das Hinzufügen eines simulierten systemweiten Prompts von ChatGPT am Anfang der Nachrichtenliste bei jeder Anfrage",
+    "Setzt vor jede Anfrage eine feste Vorgabe an den Anfang der Nachrichtenliste",
+  ],
+  ["Im Browser (WebLLM)", "Im Browser (auf diesem Gerät)"],
+  [
+    "Adresse, die der Befehl „MLC-LLM serve“ erzeugt",
+    "Adresse des Servers, der das Modell bereitstellt",
+  ],
+  ["Mit der MLC-LLM-Schnittstelle verbinden", "Mit einem eigenen Server verbinden"],
+];
+let fremdFehler = 0;
+for (const [alt, neu] of fremdnamen) {
+  const treffer = text.split(alt).length - 1;
+  if (treffer === 0) {
+    console.error("  NICHT GEFUNDEN:", alt.slice(0, 70));
+    fremdFehler++;
+    continue;
+  }
+  text = text.split(alt).join(neu);
+  console.log("  ersetzt:", treffer, "×", alt.slice(0, 55));
+}
+if (fremdFehler) {
+  console.error("ABBRUCH: " + fremdFehler + " Fremdname(n) nicht gefunden.");
+  process.exit(1);
+}
+fs.writeFileSync(ziel, text);
 
 const flachNeu = flach(ergebnis);
 console.log("geschrieben:", ziel);

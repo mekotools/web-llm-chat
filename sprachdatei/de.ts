@@ -11,7 +11,7 @@ const de: PartialLocaleType = {
     ChatItemCount: (count: any) => `${count} Nachrichten`,
   },
   Chat: {
-    SubTitle: (count: any) => `${count} Nachrichten mit ChatGPT`,
+    SubTitle: (count: any) => `${count} Nachrichten im Verlauf`,
     EditMessage: {
       Title: "Alle Nachrichten bearbeiten",
       Topic: {
@@ -73,7 +73,7 @@ const de: PartialLocaleType = {
     Copy: "Alles kopieren",
     Download: "Herunterladen",
     MessageFromYou: "Deine Nachricht",
-    MessageFromWebLLM: "Nachricht von WebLLM",
+    MessageFromWebLLM: "Nachricht vom Sprachmodell",
     Share: "Teilen",
     Format: {
       Title: "Dateiformat",
@@ -140,7 +140,7 @@ const de: PartialLocaleType = {
     },
     InjectSystemPrompts: {
       Title: "System-Prompts einfügen",
-      SubTitle: "Erzwingt das Hinzufügen eines simulierten systemweiten Prompts von ChatGPT am Anfang der Nachrichtenliste bei jeder Anfrage",
+      SubTitle: "Setzt vor jede Anfrage eine feste Vorgabe an den Anfang der Nachrichtenliste",
     },
     InputTemplate: {
       Title: "Eingabevorlage",
@@ -207,12 +207,12 @@ const de: PartialLocaleType = {
     Model: "Modell",
     ModelClientType: {
       Title: "Modellbetrieb",
-      WebLlm: "Im Browser (WebLLM)",
+      WebLlm: "Im Browser (auf diesem Gerät)",
       MlcLlm: "Über eine Schnittstelle (für Fortgeschrittene)",
     },
     MlcLlmApi: {
       Title: "Adresse der Schnittstelle",
-      SubTitle: "Adresse, die der Befehl „MLC-LLM serve“ erzeugt",
+      SubTitle: "Adresse des Servers, der das Modell bereitstellt",
       Connect: {
         Title: "Verbinden",
         SubTitle: "Mit der Schnittstelle verbinden",
@@ -363,7 +363,7 @@ const de: PartialLocaleType = {
     Error: "Die Verbindung zum Rechenkern ist verloren. Bitte alle Tabs dieser Seite schließen und neu öffnen.",
   },
   MlcLLMConnect: {
-    Title: "Mit der MLC-LLM-Schnittstelle verbinden",
+    Title: "Mit einem eigenen Server verbinden",
   },
 };
 
